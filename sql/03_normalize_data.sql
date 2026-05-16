@@ -54,12 +54,28 @@ SELECT DISTINCT
     seller_postal_code AS postal_code
 FROM raw_data;
 
-
-INSERT INTO products(name, category, weight, color, size, brand, material, description)
+INSERT INTO products(
+    name, 
+    category, 
+    weight, 
+    product_rating,
+    product_reviews,
+    product_release_date,
+    product_expiry_date,
+    color, 
+    size, 
+    brand, 
+    material, 
+    description
+)
 SELECT DISTINCT
     product_name AS name,
     product_category AS category,
     product_weight AS weight,
+    product_rating AS product_rating,
+    product_reviews AS product_reviews,
+    product_release_date AS product_release_date,
+    product_expiry_date AS product_expiry_date,
     product_color AS color,
     product_size AS size,
     product_brand AS brand,
@@ -69,35 +85,23 @@ FROM raw_data;
 
 
 
-
 INSERT INTO sales(
     date,
     quantity,
     product_quantity,
-    product_rating,
-    product_reviews,
-    product_release_date,
-    product_expiry_date,
-    sale_customer_id,
-    sale_seller_id,
-    sale_product_id,
+    total_price,
     customer_id,
     seller_id,
     product_id,
     store_id,
     pet_id,
     supplier_id
-) SELECT
+) 
+SELECT
     s.sale_date AS date,
     s.sale_quantity AS quantity,
     s.product_quantity AS product_quantity,
-    s.product_rating AS product_rating, 
-    s.product_reviews AS product_reviews, 
-    s.product_release_date AS product_release_date, 
-    s.product_expiry_date AS product_expiry_date, 
-    s.sale_customer_id AS sale_customer_id, 
-    s.sale_seller_id AS sale_seller_id, 
-    s.sale_product_id AS sale_product_id, 
+    s.total_price AS total_price,
     c.id AS customer_id,
     sl.id AS seller_id,
     p.id AS product_id,
@@ -110,17 +114,19 @@ LEFT JOIN customer AS c
 LEFT JOIN sellers AS sl
     ON s.seller_email = sl.email
 LEFT JOIN products AS p
-    ON s.product_name = p.name AND
-    s.product_category = p.category AND
-    s.product_brand = p.brand AND
-    s.product_description = p.description AND
-    s.product_size = p.size AND
-    s.product_weight = p.weight
+    ON s.product_name = p.name 
+    AND s.product_category = p.category 
+    AND s.product_brand = p.brand 
+    AND s.product_description = p.description 
+    AND s.product_size = p.size 
+    AND s.product_weight = p.weight
+    AND s.product_rating = p.product_rating
+    AND s.product_release_date = p.product_release_date
 LEFT JOIN stores AS st
-    ON s.store_phone = st.phone AND
-    s.store_email = st.email
+    ON s.store_phone = st.phone 
+    AND s.store_email = st.email
 LEFT JOIN pet AS pt 
     ON s.pet_category = pt.category
 LEFT JOIN supplier AS sp
-    ON s.supplier_phone = sp.phone AND
-    s.supplier_email = sp.email;
+    ON s.supplier_phone = sp.phone 
+    AND s.supplier_email = sp.email;
